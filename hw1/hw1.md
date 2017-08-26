@@ -1,5 +1,5 @@
 #CS-5630 / CS-6630 Homework 1
-*Due: Friday, September 2, 11:59 pm.*
+*Due: Friday, September 1, 11:59 pm.*
 
 In this assignment you will create a simple webpage with some graphical content using HTML, CSS, and SVG. These are basic building blocks that we will manipulate in later projects using Javascript and D3 in order to create visualizations. As such, it is important that you know how the pieces work on their own, before moving forward.
 
@@ -9,17 +9,17 @@ This is one of the datasets from Anscombe's quartett that we discussed in Lectur
 
 | X | Y |
 --- |----
-10.0	| 8.04
-8.0	| 6.95
- 13.0	| 7.58
- 9.0	|8.81
- 11.0	|8.33
- 14.0	|9.96
- 6.0	|7.24
- 4.0	|4.26
- 12.0	|10.84
- 7.0	|4.82
- 5.0	|5.68
+10.0	| 7.46
+8.0	| 6.77
+ 13.0	| 12.74
+ 9.0	|7.11
+ 11.0	|7.81
+ 14.0	|8.84
+ 6.0	|6.08
+ 4.0	|5.39
+ 12.0	|8.15
+ 7.0	|6.42
+ 5.0	|5.73
  
 
 ## Design and Implementation
@@ -34,7 +34,7 @@ Make sure your submission is a valid HTML5 file. Check that it is valid by uploa
 
 ### Bar Charts
 
-Create a horizontal bar chart for both the X and the Y dimensions of the data. Your bars should be aligned along the left and point right. Here is how your bars could look like:
+Create a vertical bar chart for both the X and the Y dimensions of the data. Your bars should be aligned along the bottom and point up. Here is how your bars could look like:
 
 ![Bar chart](figures/bars.png)
 
