@@ -1,4 +1,4 @@
-#CS-5630 / CS-6630 Homework 1
+# CS-5630 / CS-6630 Homework 1
 *Due: Friday, September 1, 11:59 pm.*
 
 In this assignment you will create a simple webpage with some graphical content using HTML, CSS, and SVG. These are basic building blocks that we will manipulate in later projects using Javascript and D3 in order to create visualizations. As such, it is important that you know how the pieces work on their own, before moving forward.
