@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+	h1, h4 {
+	    text-align: center;
+	    color: black;
+	}
+	h3 {
+	    text-align: left;
+	    color: blue;
+	}
+	.barclass {
+		stroke:rgb(108,146,35);
+		fill:rgb(108,146,35);
+	}
+	.lineclass {
+	    stroke:rgb(108,146,35);
+	    stroke-width:2px;
+	    fill:none;
+	    vector-effect:non-scaling-stroke;
+	} 
+	.areaclass {
+	    stroke:rgb(108,146,35);
+	    stroke-width:2;
+	    fill:rgb(108,146,35);
+	}
+	.rect{
+		stroke:black;
+	    stroke-width:5px;
+	    fill:none;
+	}
+	.circle{
+		stroke:rgb(108,146,35);
+	    stroke-width:1;
+	    fill:rgb(108,146,35);
+	}
+</style>
+</head>
+
+<title>CS6630 HW1</title>
+<h1>CS-6630 Homework 1</h1>
+<h4>Name: Hsuan Lee</h4>
+<h4>uID: u1076070</h4>
+<h4>e-mail: <a href='hsuan.lee@utah.edu'>hsuan.lee@utah.edu</a></h4>
+<hr>
+
+
+<body>
+
+<!--
+Bar Chart //using rotate
+-->
+<h3>Bar Chart of X and Y dimension</h3>
+<svg class = "barclass" width="650" height="250">
+	<g transform = "rotate(-90,125,125)">
+		<g transform = "scale(15,1)">
+	        <rect x = 0 y = 0 width="10" height="18" ></rect>
+	        <rect x = 0 y = 20 width="8" height="18" ></rect>
+	        <rect x = 0 y = 40 width="13" height="18" ></rect>
+	        <rect x = 0 y = 60 width="9" height="18" ></rect>
+	        <rect x = 0 y = 80 width="11" height="18" ></rect>
+	        <rect x = 0 y = 100 width="14" height="18" ></rect>
+	        <rect x = 0 y = 120 width="6" height="18" ></rect>
+	        <rect x = 0 y = 140 width="4" height="18" ></rect>
+	        <rect x = 0 y = 160 width="12" height="18" ></rect>
+	        <rect x = 0 y = 180 width="7" height="18" ></rect>
+	        <rect x = 0 y = 200 width="5" height="18" ></rect>
+        </g>  
+	    <g transform = "scale(15,1)">
+	    	<rect x = 0 y = 320 width="7.46" height="18" ></rect>
+	        <rect x = 0 y = 340 width="6.77" height="18"></rect>
+	        <rect x = 0 y = 360 width="12.74" height="18"></rect>
+	        <rect x = 0 y = 380 width="7.11" height="18"></rect>
+	        <rect x = 0 y = 400 width="7.81" height="18"></rect>
+	        <rect x = 0 y = 420 width="8.84" height="18"></rect>
+	        <rect x = 0 y = 440 width="6.08" height="18"></rect>
+	        <rect x = 0 y = 460 width="5.39" height="18"></rect>
+	        <rect x = 0 y = 480 width="8.15" height="18"></rect>
+	        <rect x = 0 y = 500 width="6.42" height="18"></rect>
+	        <rect x = 0 y = 520 width="5.73" height="18"></rect>
+	    </g> 
+    </g> 
+</svg>
+<hr>
+
+<!--
+Line Chart
+-->
+<h3>Line Chart of X dimension</h3>
+<svg height="200" width="210">
+ <g transform="translate(0, 200) scale(1.5, -12)">
+ 	<path class="lineclass" d="M 0 10 L 10 8 L 20 13 L 30 9 L40 11 L 50 14 L 60 6 L 70 4 L 80 12 L 90 7 L 100 5" />
+ </g>
+</svg>
+<h3>Line Chart of Y dimension</h3>
+<svg height="200" width="210">
+	<g transform="translate(0, 200) scale(1.5,-12)">
+  		<line class="lineclass" x1="0" y1="7.46" x2="10" y2="6.77" />
+  		<line class="lineclass" x1="10" y1="6.77" x2="20" y2="12.74" />
+  		<line class="lineclass" x1="20" y1="12.74" x2="30" y2="7.11" />
+  		<line class="lineclass" x1="30" y1="7.11" x2="40" y2="7.81" />
+  		<line class="lineclass" x1="40" y1="7.81" x2="50" y2="8.84" />
+  		<line class="lineclass" x1="50" y1="8.84" x2="60" y2="6.08" />
+  		<line class="lineclass" x1="60" y1="6.08" x2="70" y2="5.39" />
+  		<line class="lineclass" x1="70" y1="5.39" x2="80" y2="8.15" />
+  		<line class="lineclass" x1="80" y1="8.15" x2="90" y2="6.42" />
+  		<line class="lineclass" x1="90" y1="6.42" x2="100" y2="5.73" />
+  	</g>
+</svg>
+
+<hr>
+<!--
+Area Chart
+-->
+<h3>Area Chart of X dimension</h3>
+<svg height="200" width="210">
+ <g transform="translate(0, 200)">
+  <g transform=scale(1.5,-12)>
+ 	<path class= "areaclass" d="M 0 0 L 0 10 L 10 8 L 20 13 L 30 9 L40 11 L 50 14 L 60 6 L 70 4 L 80 12 L 90 7 L 100 5 L 100 0 Z" />
+  </g>
+ </g>
+</svg>
+
+<h3>Area Chart of Y dimension</h3>
+<svg height="200" width="210">
+	<g transform="translate(0, 200) scale(1.5,-12)">
+	 	<path class= "areaclass" d="M 0 0 L 0 7.46 L 10 6.77 L 20 12.74 L 30 7.11 L 40 7.81 L 50 8.84 L 60 6.08 L 70 5.39 L 80 8.15 L 90 6.42 L 100 5.73 L 100 0 Z" />
+	 </g>
+</svg>
+<hr>
+<!--
+Scatter plot
+-->
+<h3>Scatter plot of X and Y</h3>
+<svg class="circle" height="400" width="400">
+	<g transform="translate(0, 400) scale(1, -1)">
+	<rect class="rect" width="400" height="400" />
+ 
+	 <g transform = scale(20,20)>
+		 <circle  cx="10" cy="7.46" r="0.05"/>
+		 <circle  cx="8" cy="6.77" r="0.05" />
+		 <circle  cx="13" cy="12.74" r="0.05" />
+		 <circle  cx="9" cy="7.11" r="0.05" />
+		 <circle  cx="11" cy="7.81" r="0.05" />
+		 <circle  cx="14" cy="8.84" r="0.05" />
+		 <circle  cx="6" cy="6.08" r="0.05" />
+		 <circle  cx="4" cy="5.39" r="0.05" />
+		 <circle  cx="12" cy="8.15" r="0.05" />
+		 <circle  cx="7" cy="6.42" r="0.05" />
+		 <circle  cx="5" cy="5.73" r="0.05" />
+	 </g>
+	 </g>
+</svg>
+
+
+</body>
+</html>
