@@ -8,21 +8,21 @@ class Tree {
 	//var list = new Array(0);
 
 	constructor(json) {
-		this.size = json.length;
+		//this.size = json.length;
 		
 		this.list = [];
-		var jsonarray = json;
+		//var jsonarray = json;
 		var i=0;
 		//this.list[0] = new Node(jsonarray[0]['name'],jsonarray[0]['parent']);
-		jsonarray.forEach( function(Entry) {
+		json.forEach( function(Entry) {
 			// statements
-			//console.log(Entry['name']);
+			console.log(Entry['name']);
 			var newnode = new Node(Entry['name'],Entry['parent']);
 			//console.log("size:"+this.size);
 			this.list[i++]=newnode;
 		},this);
 
-		this.maxlevel = 0;
+		//this.maxlevel = 0;
 	}
 
 	/**
@@ -30,15 +30,16 @@ class Tree {
 	 */
 	buildTree() {
 		
-		for (var i = 0; i < this.size; ++i) {
+		for (var i = 0; i < this.list.length; ++i) {
 			var tmpNode = this.list[i];
-    		if (tmpNode.parentName=="root") {
+			console.log("parent:"+tmpNode.name);
+    		//if (tmpNode.parentName=="root") {
     			//root node for recursive function
-    			this.root = tmpNode;
-    		}
-    		for(var j = 0; j < this.size; j++){
+    		//	this.root = tmpNode;
+    		//}
+    		for(var j = 0; j < this.list.length; j++){
     			if(this.list[j].parentName==tmpNode.name){
-    				//console.log("name:"+this.list[j].name);
+    				console.log("name:"+this.list[j].name);
     				tmpNode.children.push(this.list[j]);
     				this.list[j].parentNode = tmpNode;
     			}
@@ -47,9 +48,9 @@ class Tree {
 		}
 	//Assign Positions and Levels by making calls to assignPosition() and assignLevel()
 		
-		this.assignLevel(this.root,0);
+		this.assignLevel(this.list[0],0);
 		//this.initialPosIndex();
-		this.assignPosition(this.root,0);
+		this.assignPosition(this.list[0],0);
 	}
 
 	/**
@@ -60,7 +61,7 @@ class Tree {
 		var level = -1;
 		var pos = 0;
 		var queue = [];
-		queue.push(this.root);
+		queue.push(this.list[0]);
 		while(queue.length>0){
 			var tmpNode = queue.shift();
 			if(tmpNode.level!=level){
@@ -93,6 +94,7 @@ class Tree {
 	/**
 	 * 
 	 */
+	/*
 	initialPosIndex(){
 		this.posindex = [];
 		var i=0;
@@ -100,12 +102,15 @@ class Tree {
 			this.posindex[i++] = 0;
 		}
 	}
+	*/
 	/**
 	 * Recursive function that assign levels to each node
 	 */
+	
 	assignLevel(node, level) {
-		if(level>this.maxlevel)
-			this.maxlevel = level;
+		//if(level>this.maxlevel)
+		//	this.maxlevel = level;
+		//node.level = 0;
 		node.level = level;
 		var childlist = node.children;
 		for(var i=0;i<childlist.length;i++){
@@ -113,6 +118,7 @@ class Tree {
 			this.assignLevel(tmpNode,level+1); 
 		}
 	}
+	
 
 	/**
 	 * Function that renders the tree
