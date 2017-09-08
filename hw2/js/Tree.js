@@ -8,12 +8,9 @@ class Tree {
 	//var list = new Array(0);
 
 	constructor(json) {
-		//this.size = json.length;
 		
 		this.list = [];
-		//var jsonarray = json;
 		var i=0;
-		//this.list[0] = new Node(jsonarray[0]['name'],jsonarray[0]['parent']);
 		json.forEach( function(Entry) {
 			// statements
 			console.log(Entry['name']);
@@ -22,7 +19,6 @@ class Tree {
 			this.list[i++]=newnode;
 		},this);
 
-		//this.maxlevel = 0;
 	}
 
 	/**
@@ -108,9 +104,7 @@ class Tree {
 	 */
 	
 	assignLevel(node, level) {
-		//if(level>this.maxlevel)
-		//	this.maxlevel = level;
-		//node.level = 0;
+		
 		node.level = level;
 		var childlist = node.children;
 		for(var i=0;i<childlist.length;i++){
