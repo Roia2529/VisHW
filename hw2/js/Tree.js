@@ -28,14 +28,13 @@ class Tree {
 		
 		for (var i = 0; i < this.list.length; ++i) {
 			var tmpNode = this.list[i];
-			console.log("parent:"+tmpNode.name);
+			//console.log("parent:"+tmpNode.name);
     		//if (tmpNode.parentName=="root") {
     			//root node for recursive function
     		//	this.root = tmpNode;
     		//}
     		for(var j = 0; j < this.list.length; j++){
     			if(this.list[j].parentName==tmpNode.name){
-    				console.log("name:"+this.list[j].name);
     				tmpNode.children.push(this.list[j]);
     				this.list[j].parentNode = tmpNode;
     			}
@@ -118,7 +117,13 @@ class Tree {
 	 * Function that renders the tree
 	 */
 	renderTree() {
+		var body = d3.select("body");
+		body.append("svg");
 		 var svg = d3.select("svg");
+		 svg
+		 	.attr("height", 1200)
+		 	.attr("width", 1200);
+
 		 var xscale = 180;
 		 var yscale = 110;
 		 var xshift = 100;
