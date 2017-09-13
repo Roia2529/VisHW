@@ -282,9 +282,22 @@ function update(error, data) {
             .attr("r",5)
             .style("opacity", 1); 
 
-
     // ****** TODO: PART IV ******
+    //bar chart 
+    bcrect1
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut);
 
+    bcrect2
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut);        
+
+    //Scatter plot        
+    Scatdata.on("click", function() {
+        var t = this;
+          console.log("x:" + this.getAttribute("cx"));
+          console.log("y:" + this.getAttribute("cy"));
+          });
 }
 
 /**
@@ -321,3 +334,15 @@ function randomSubset() {
     }
 }
 
+function handleMouseOver() {
+    // Use D3 to select element, change color and size
+        d3.select(this)
+            .attr("fill","orange");
+            //.attr;
+
+}
+
+function handleMouseOut() {
+        d3.select(this)
+            .attr("fill","steelblue");
+}
