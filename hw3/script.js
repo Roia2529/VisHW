@@ -66,7 +66,7 @@ function update(error, data) {
 
 
     // ****** TODO: PART III (you will also edit in PART V) ******
-    console.log(error); //null
+    //console.log(error); //null
     // TODO: Select and update the 'a' bar chart bars
     
     let bc1 = d3.select("#barchart1");
@@ -257,21 +257,37 @@ function update(error, data) {
 
     // TODO: Select and update the scatterplot points
     let Scat = d3.select("#Scatter");
-    let Scatdata = Scat.selectAll("circle").data(data);
-    let newScat = Scatdata.enter().append("circle")
-                    .attr("cx",15)
-                    .attr("cy",15)
-                    .attr("r",5)
-                    .style("opacity", 0);
-    Scatdata.exit()
-            .style("opacity", 1)
-            .transition()
-            .duration(3000)
-            .style("opacity", 0)
-            .remove();
 
+    var Scatdata = Scat.selectAll("circle").data(data);
+
+    Scatdata.exit().remove();
+                       
+    var newScat = Scatdata.enter().append("circle")
+                        .attr("cx",function(d){
+                            return aScale(d.a)
+                        })
+                        .attr("cy",function(d){
+                            return bScale(d.b)
+                        })
+                        .attr("r",5);
+                        //.style("opacity", 1)//;
+                        /*
+                    .append("svg:title")
+                            .text(function(d) {
+                                var s = "x:" + d.a.toString() + "  y:" + d.b.toString();
+                                return s; 
+                            }); 
+    //*/         
     Scatdata = newScat.merge(Scatdata);
-    Scatdata.transition()
+
+    Scatdata.append("title")
+            .text(function(d) {
+                var s = "x:" + d.a.toString() + "  y:" + d.b.toString();
+                return s; 
+            });
+
+    Scatdata
+            .transition()
             .duration(3000)
             .attr("cx",function(d){
                 return aScale(d.a)
@@ -280,8 +296,15 @@ function update(error, data) {
                 return bScale(d.b)
             })
             .attr("r",5)
-            .style("opacity", 1); 
-
+            .style("opacity", 1);
+    //if we append title here, the value will not match the circle coordinate.        
+    /*
+    Scatdata.append("title")
+          .text(function(d) {
+           var a = this;
+           return "x:" + this.getAttribute("cx")
+       }); 
+    //*/    
     // ****** TODO: PART IV ******
     //bar chart 
     bcrect1
@@ -294,7 +317,7 @@ function update(error, data) {
 
     //Scatter plot        
     Scatdata.on("click", function() {
-        var t = this;
+        //var t = this;
           console.log("x:" + this.getAttribute("cx"));
           console.log("y:" + this.getAttribute("cy"));
           });
@@ -335,14 +358,13 @@ function randomSubset() {
 }
 
 function handleMouseOver() {
-    // Use D3 to select element, change color and size
         d3.select(this)
             .attr("fill","orange");
-            //.attr;
-
 }
 
 function handleMouseOut() {
         d3.select(this)
             .attr("fill","steelblue");
 }
+
+window.onload = changeData;
