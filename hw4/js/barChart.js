@@ -23,41 +23,94 @@ class BarChart {
         // sure to leave room for the axes
 
         //get boundary from node
-        var svgBounds = d3.select("#barChart").node().getBoundingClientRect();
-        var xleft = 100,
-        var yup = 70;
+        let svgBounds = d3.select("#barChart").node().getBoundingClientRect();
+        let xbuffer = 100;
+        let ybuffer = 70;
 
-        var widthbar= svgBounds.width - xleft,
-        var heightbar = svgBounds.height - yup,
-        var padding = 2;
+        let widthRange= svgBounds.width - xbuffer;
+        let heightRange = svgBounds.height - ybuffer;
+        let padding = 2;
 
-        var years = this.allData.map(function (d) {return d.year}).sort();
+        let years = this.allData.map(function (d) {return d.year}).sort();
 
         //x scales, depends on years
-        var rMinX = 0;
-        var rMaxX = widthbar;
-        var xScale = d3.scaleBand().domain(years).range([rMinX, rMaxX]);
+        let rMinX = 0;
+        let rMaxX = widthRange;
+        let xScale = d3.scaleBand().domain(years).range([rMinX, rMaxX]);
 
         //y scale
-        var minY = 0;
-        var maxY = d3.max(allWorldCupData,
+        let minY = 0;
+        let maxY = d3.max(this.allData,
             function (d) {
                 return d[selectedDimension]
             });
-        var rMinY = 0;
-        var rMaxY = heightbar;
+        let rMinY = 0;
+        let rMaxY = heightRange;
 
-        var yScale = d3.scaleLinear()
+        let yScale = d3.scaleLinear()
             .domain([minY, maxY])
-            .range([rMaxY, rMinY])
+            .range([rMaxY, rMinY]) //reverse y value
             .nice();
+
         // Create colorScale
+        let colorScale = d3.scaleLinear()
+                            .domain([minY, maxY]) //according to y value
+                            .range(['White', 'SteelBlue']);
 
         // Create the axes (hint: use #xAxis and #yAxis)
+        let xAxis = d3.axisBottom().scale(xScale);
+        let xAxis_pos = d3.select('#xAxis')
+            .attr('transform', 'translate(' + xbuffer + ',' + heightRange + ')')
+            .call(xAxis);
+
+            xAxis_pos
+            .selectAll('text')
+            .attr('transform', 'translate(' + 15 + ', ' + 30 + ') rotate(90)');
+
+        let yAxis = d3.axisLeft().scale(yScale);
+        let yAxis_pos = d3.select('#yAxis')
+            .transition()
+            .duration(2500)
+            .attr('transform', 'translate(' + xbuffer + ', 0)')
+            .call(yAxis);
+
+            yAxis_pos.selectAll('text')
+                    .attr('visibility', function (d, i) {
+                            if (i == yAxis_pos.selectAll('text').size() - 1) {
+                                return 'hidden';
+                            } else {
+                                return 'visible';
+                            }});
 
         // Create the bars (hint: use #bars)
+        let barwidth = xScale.bandwidth() - padding;
+        let bars = d3.select('#bars')
+                        .attr('transform', 'translate(' + xbuffer + ', ' + 0 + ')')
+                        .selectAll('rect')
+                        .data(this.allData);
 
+            bars = bars.enter().append('rect').merge(bars);
 
+            bars
+                .transition().duration(2500)
+                .attr('x', function (d) {
+                    return xScale(d.year) + padding
+                })
+                .attr('y', function (d) {
+                    return yScale(d[selectedDimension])
+                })
+                .attr('width', barwidth)
+                .attr('height', function (d) {
+                    return heightRange - yScale(d[selectedDimension])
+                })
+                .style('fill', function (d) {
+                    var self = d3.select(this);
+                    if (!self.classed('selected')) {
+                        return colorScale(d[selectedDimension]);
+                    } else {
+                        return 'OrangeRed';
+                    }
+                });    
 
 
         // ******* TODO: PART II *******
@@ -68,7 +121,18 @@ class BarChart {
 
         // Call the necessary update functions for when a user clicks on a bar.
         // Note: think about what you want to update when a different bar is selected.
+            bars.on("click", function (d){
+                //reset all bars' color
+                d3.select('#bars')
+                .selectAll('.selected')
+                .classed('selected', false)
+                .style('fill', colorScale(d[selectedDimension]));
 
+                //change the color of the selected bar 
+                d3.select(this)
+                    .classed('selected', true)
+                    .style("fill", 'OrangeRed');
+            });
     }
 
     /**
@@ -83,7 +147,7 @@ class BarChart {
         // menu item from the drop down.
 
         //Get selected choice
-        let choice = document.getElementById('dataset').value;
+        var choice = document.getElementById('dataset').value;
         updateBarChart(choice);
 
     }

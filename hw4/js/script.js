@@ -46,8 +46,7 @@ function chooseData() {
     // ******* TODO: PART I *******
     // Changed the selected data when a user selects a different
     // menu item from the drop down.
-    let dataFile = document.getElementById('dataset').value;
-    //d3.csv('data/' + dataFile + '.csv', update);
+    var dataFile = document.getElementById('dataset').value;
 
-
+    barChart.updateBarChart(dataFile);
 }
