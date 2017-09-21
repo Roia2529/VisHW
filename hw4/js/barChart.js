@@ -121,8 +121,9 @@ class BarChart {
 
         // Call the necessary update functions for when a user clicks on a bar.
         // Note: think about what you want to update when a different bar is selected.
-            bars.on("click", function (d){
-                //reset all bars' color
+        let this_bar = this;
+        function clickevent(d){
+            //reset all bars' color
                 d3.select('#bars')
                 .selectAll('.selected')
                 .classed('selected', false)
@@ -132,7 +133,14 @@ class BarChart {
                 d3.select(this)
                     .classed('selected', true)
                     .style("fill", 'OrangeRed');
-            });
+
+                //call updateInfo
+                this_bar.infoPanel.updateInfo(d);
+                //call updateMap
+                this_bar.worldMap.updateMap(d);
+                
+        }
+        bars.on("click",clickevent);
     }
 
     /**

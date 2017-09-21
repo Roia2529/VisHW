@@ -37,6 +37,11 @@
 .selected {
     fill: #d20a11;
 }
+.countryName {
+    background-color: yellow;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
 
 /*Map grid style*/
 .grat {

@@ -20,7 +20,7 @@ d3.csv("data/fifa-world-cup.csv", function (error, allData) {
 
     /* Create infoPanel, barChart and Map objects  */
     let infoPanel = new InfoPanel();
-    let worldMap = new Map();
+    let worldMap = new Map(allData);
 
     /* DATA LOADING */
     //Load in json data to make map
@@ -46,7 +46,7 @@ function chooseData() {
     // ******* TODO: PART I *******
     // Changed the selected data when a user selects a different
     // menu item from the drop down.
-    var dataFile = document.getElementById('dataset').value;
+    let dataFile = document.getElementById('dataset').value;
 
     barChart.updateBarChart(dataFile);
 }

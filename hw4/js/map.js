@@ -3,9 +3,9 @@ class Map {
     /**
      * Creates a Map Object
      */
-    constructor() {
+    constructor(allData) {
         this.projection = d3.geoConicConformal().scale(150).translate([400, 350]);
-
+        this.allData = allData;
     }
 
     /**
@@ -20,7 +20,15 @@ class Map {
         // Hint: If you followed our suggestion of using classes to style
         // the colors and markers for hosts/teams/winners, you can use
         // d3 selection and .classed to set these classes on and off here.
+        let map = d3.select("#map");
 
+        map.selectAll(".countries") //select css
+           .classed(".team",false)
+           .classed(".host",false);
+            //.attr('class', 'countries');
+
+        let points = d3.select('#points');
+        points.selectAll('circle').remove();
     }
 
     /**
@@ -39,16 +47,39 @@ class Map {
         // Hint: remember we have a conveniently labeled class called .winner
         // as well as a .silver. These have styling attributes for the two
         // markers.
-
-
+        
         // Select the host country and change it's color accordingly.
-
         // Iterate through all participating teams and change their color as well.
-
         // We strongly suggest using CSS classes to style the selected countries.
-
-
+        let map = d3.select("#map");
+        map.selectAll(".countries")
+            .attr("class",
+                  function (d) {
+                      if (d.id == worldcupData.host_country_code) {
+                          return "countries host"
+                      } else if (worldcupData.teams_iso.includes(d.id)) {
+                          return "countries team"
+                      } else {
+                          return "countries"
+                      }
+                  });
         // Add a marker for gold/silver medalists
+        var winpos_proj = this.projection(worldcupData.win_pos);
+        var rupos_proj = this.projection(worldcupData.ru_pos);
+        let points = d3.select("#points");
+
+        points.append('circle')
+                .attr('class','gold')
+                  .attr('r',10)
+                  .attr('cx',winpos_proj[0])
+                  .attr('cy', winpos_proj[1]);
+              
+
+        points.append('circle')
+              .attr('r',10)
+              .attr('cx', rupos_proj[0])
+              .attr('cy', rupos_proj[1])
+              .attr('class','silver');       
     }
 
     /**
@@ -70,8 +101,63 @@ class Map {
 
         // Make sure and give your paths the appropriate class (see the .css selectors at
         // the top of the provided html file)
+        let path = d3.geoPath().projection(this.projection);
+        let outlines = topojson.feature(world, world.objects.countries).features;
+        let mapbox = d3.select("#map").selectAll('path').data(outlines);
 
+        let this_bar = this;
+        function countryinfo(d){
+            let listy =[];
+            let country_name;
+            this_bar.allData.forEach( function(Entry) {
+                //can not use let i=0;
+                for(var i=0;i<Entry.teams_iso.length;i++){
+                    let tmp = Entry.teams_iso[i];
+                    if(tmp===d.id){
+                        country_name = tmp;
+                        listy.push(Entry.year);
+                    }
+                }
+            });
+            
+            let info = d3.select('#c_details');
+            info.select('#countryname').text(country_name);
+
+            info.select('#attendyear').select('ul').remove();
+            let years = info.select('#attendyear')
+                        .append('ul')
+                        .selectAll('li')
+                        .data(listy);
+
+                        years.enter()
+                             .append('li')
+                             .text(function (d) {return d});
+        }
+
+
+        //world map
+        mapbox.exit().remove();
+            mapbox
+                .enter()
+                .append('path')
+                .attr('class', 'countries')
+                .attr('d', path)
+                //assign id
+                .attr('id', function(d) {return d.id})
+                //click test                         
+                .on('click',function(d){
+                    console.log(d);
+                    console.log(d.id);
+                    countryinfo(d);
+                });
+
+        //grid
+        let graticule = d3.geoGraticule();
+        d3.select("#map").append('path')
+                         .datum(graticule)
+                         .attr('class', "grat")
+                         .attr('d', path)
+                         .attr('fill', 'none');   
     }
-
 
 }
