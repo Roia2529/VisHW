@@ -63,9 +63,11 @@
                 //Resutl
                 let ranking = d3.max(leaves, function(l){return ranktable[l.Result]});
                 let label;
-                for(let l in leaves){
-                    if(ranktable[l.Result]===ranking)
-                        label = l.Result;
+                for(var i in leaves){
+                    //console.log(i);
+                    //console.log(leaves[i].Result);
+                    if(ranktable[leaves[i].Result]===ranking)
+                        label = leaves[i].Result;
                 }
 
                 //games
@@ -98,7 +100,7 @@
                 }; 
             })
             .entries(matchesCSV);
-     console.log(teamData);       
+     //console.log(teamData);       
 //     /**
 //      * Loads in the tree information from fifa-tree.csv and calls createTree(csvData) to render the tree.
 //      *
