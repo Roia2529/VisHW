@@ -12,7 +12,7 @@ class Table {
         // Initially, the tableElements will be identical to the teamData
         //this.tableElements = null;
         this.tableElements = teamData.slice(0,teamData.length); 
-        //console.log(this.tableElements);
+        console.log(this.tableElements);
         ///** Store all match data for the 2014 Fifa cup */
         this.teamData = teamData;
 
@@ -61,13 +61,13 @@ class Table {
         //Update Scale Domains
         this.goalScale = d3.scaleLinear()
             .domain([0, d3.max(this.teamData,function(t){return t.value["Goals Made"]})])
-            .range([0, this.cell.width *2]);
+            .range([this.cell.buffer, this.cell.width *2]);
 
         this.gameScale = d3.scaleLinear()
             .domain([0, d3.max(this.teamData, function(d) {return d.value.TotalGames;})])
             .range([0, this.cell.width]);
 
-        this.goalColorScale = d3.scaleLinear()
+        this.goalColorScale = d3.scaleQuantize()
             .domain([-1, 1])
             .range(['#cb181d', '#034e7b']); 
 
@@ -79,9 +79,9 @@ class Table {
         d3.select('#goalHeader')
           .append('svg')
             .attr('width', 2 * this.cell.width+this.cell.buffer)
-            .attr('height', this.cell.height+this.cell.buffer)
+            .attr('height', this.cell.height+1)
           .append('g')
-            .attr('transform', 'translate(' + this.cell.buffer/2 +',' + this.cell.height + ')') 
+            .attr('transform', 'translate(0,' + this.cell.height + ')') 
             .call(GoalAxis);
    
         //add GoalAxis to header of col 1.
@@ -138,21 +138,54 @@ class Table {
                .enter()
                .append('td');
 
-
         //Add scores as title property to appear on hover
 
         //Populate cells (do one type of cell at a time )
         let barscale = this.gameScale;
         let barfillscale = this.aggregateColorScale; 
-        
+        let goalscale = this.goalScale;
+        let goalcolor = this.goalColorScale;
+
         //Create diagrams in the goals column
         let allgoal = rowtd.filter(function (d) {
                         return d.vis == 'goalaxis'
                     });
-        let goalvis = allgoal.append('svg')
-                        .attr('width', this.cell.width).attr('height', this.cell.height)
-                        .append('g');             
+        let goalvis = allgoal
+                        .style('padding', 0)    
+                        .append('svg')
+                        .attr('width', 2 * this.cell.width+this.cell.buffer).attr('height', this.cell.height)
+                        .append('g');
+                        
+        goalvis.append('rect')
+               .attr('x',function(d){ return goalscale(Math.min(d.value.gMade,d.value.gConcede));})
+               .attr('y',3)
+               .attr('width',function(d){return Math.abs(goalscale(d.value.gMade)-goalscale(d.value.gConcede));})
+               .attr('height',14)
+               .style('fill',function(d){
+                //console.log(d.value.gMade-d.value.gConcede);
+                return goalcolor(+d.value.gMade-+d.value.gConcede);})
+               .classed('goalBar', true);  
         
+        goalvis.append('circle')
+                .attr('cx',function(d){return goalscale(d.value.gMade);})
+                .attr('cy',10)
+                .classed('goalCircle', true)
+                .style('fill', function(d) {return d.type == 'aggregate' ? '#364e74' : 'white';})
+                .style('stroke', '#364e74');
+
+        goalvis.append('circle')
+                .attr('cx',function(d){return goalscale(d.value.gConcede);})
+                .attr('cy',10)
+                .classed('goalCircle', true)
+                .style('fill', function(d) {return d.type == 'aggregate' ? '#be2714' : 'white';})
+                .style('stroke', '#be2714');        
+
+
+        let tiegames = goalvis.filter(function(d){return d.value.gMade==d.value.gConcede});
+        tiegames.selectAll('circle')
+                .style('fill', 'gray')
+                .style('stroke', 'gray');  
+
         //bar chart
         let allbar = rowtd.filter(function (d) {
                         return d.vis == 'bar'
@@ -160,8 +193,7 @@ class Table {
         let barvis = allbar.style('padding-left', 0)
                         .append('svg')
                         .attr('width', this.cell.width).attr('height', this.cell.height);
-
-                      
+                   
         barvis.append('rect')
               .attr('x',0)
               //.attr('y',5)
