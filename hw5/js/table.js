@@ -12,7 +12,7 @@ class Table {
         // Initially, the tableElements will be identical to the teamData
         //this.tableElements = null;
         this.tableElements = teamData.slice(0,teamData.length); 
-        console.log(this.tableElements);
+        //console.log(this.tableElements);
         ///** Store all match data for the 2014 Fifa cup */
         this.teamData = teamData;
 
@@ -100,14 +100,18 @@ class Table {
      * Updates the table contents with a row for each element in the global variable tableElements.
      */
     updateTable() {
+
+        //console.log(this.tableElements);
         // ******* TODO: PART III *******
         //Create table rows
         let tbody = d3.select("#matchTable").select('tbody');
 
+        let self = this;
         let tbodytr = tbody.selectAll('tr').data(this.tableElements)
                 .enter()
                 .append('tr')
-                .attr('class',function(d){return d.value.type;});
+                .attr('class',function(d){return d.value.type;})
+                .on('click', function(d,i){self.updateList(i)});
 
         //Append th elements for the Team Names
         //Note: return []!!!
@@ -158,9 +162,9 @@ class Table {
                         
         goalvis.append('rect')
                .attr('x',function(d){ return goalscale(Math.min(d.value.gMade,d.value.gConcede));})
-               .attr('y',3)
+               .attr('y',function(d){return d.type == 'aggregate'? 3:7})
                .attr('width',function(d){return Math.abs(goalscale(d.value.gMade)-goalscale(d.value.gConcede));})
-               .attr('height',14)
+               .attr('height',function(d){return d.type == 'aggregate'? 14:7})
                .style('fill',function(d){
                 //console.log(d.value.gMade-d.value.gConcede);
                 return goalcolor(+d.value.gMade-+d.value.gConcede);})
@@ -180,10 +184,10 @@ class Table {
                 .style('fill', function(d) {return d.type == 'aggregate' ? '#be2714' : 'white';})
                 .style('stroke', '#be2714');        
 
-
+        //Set the color of all games that tied to light gray        
         let tiegames = goalvis.filter(function(d){return d.value.gMade==d.value.gConcede});
         tiegames.selectAll('circle')
-                .style('fill', 'gray')
+                .style('fill', function(d){ return d.type== 'aggregate' ? 'gray' : 'white';})
                 .style('stroke', 'gray');  
 
         //bar chart
@@ -197,7 +201,7 @@ class Table {
         barvis.append('rect')
               .attr('x',0)
               //.attr('y',5)
-              .attr('width',function(d){return barscale(d.value);})
+              .attr('width',function(d){return d.value==undefined? 0:barscale(d.value);})
               .attr('height',this.bar.height)
               .style('fill',function(d){return barfillscale(d.value);});
 
@@ -206,14 +210,15 @@ class Table {
               .style('fill','white')
               .attr('y', this.cell.buffer-1)
               .attr('x', function(d) {
-                    return barscale(d.value - 1);
+                    //console.log(d.value);
+                    return d.value==undefined? 0:barscale(d.value - 1);
               });
         
         //Result column
         let Round = rowtd.filter(function(d){return d.vis=='text'}); 
         Round.attr('class','label').text(function(d){return d.value;}).attr('width',this.cell.width*2);
 
-        //Set the color of all games that tied to light gray
+        
 
     };
 
@@ -223,9 +228,23 @@ class Table {
      */
     updateList(i) {
         // ******* TODO: PART IV *******
-       
+        //let newatableElement = this.tableElements;
+        console.log(i);
+        //console.log(this.tableElements);
         //Only update list for aggregate clicks, not game clicks
-        
+        if(i==undefined || this.tableElements[i].value.type !='aggregate') return;
+
+        //expand
+        if(this.tableElements[i+1]==undefined || this.tableElements[i+1].value.type=='aggregate'){
+            let gameslist = this.tableElements[i].value.games;
+            this.tableElements = this.tableElements.slice(0, i+1).concat(gameslist).concat(this.tableElements.slice(i+1));
+        }
+        //shrink
+        else{
+            this.tableElements = this.tableElements.slice(0, i+1).concat(this.tableElements.slice(i+1+this.tableElements[i].value.games.length));
+        }
+        d3.select('#matchTable').select('tbody').selectAll('tr').remove();
+        this.updateTable();
     }
 
     /**
