@@ -45,7 +45,10 @@ class Table {
         this.aggregateColorScale = null; 
 
         /**For goal Column. Use colors '#cb181d', '#034e7b'  for the range.*/
-        this.goalColorScale = null; 
+        this.goalColorScale = null;
+
+        //
+        this.toggle = null; 
     }
 
 
@@ -75,6 +78,7 @@ class Table {
             .domain([0, d3.max(this.teamData, function(d) {return d.value.TotalGames;})])
             .range(['#ece2f0', '#016450']);        
 
+        //add GoalAxis to header of col 1.    
         let GoalAxis = d3.axisTop().scale(this.goalScale);
         d3.select('#goalHeader')
           .append('svg')
@@ -84,15 +88,95 @@ class Table {
             .attr('transform', 'translate(0,' + this.cell.height + ')') 
             .call(GoalAxis);
    
-        //add GoalAxis to header of col 1.
-
         // ******* TODO: PART V *******
 
         // Set sorting callback for clicking on headers
-
+        let tr = d3.select('#matchTable').select('thead').select('tr');
         // Clicking on headers should also trigger collapseList() and updateTable(). 
+        function sort(column,self){
+            //var tog;
+            let asc = 1, desc = -1;
 
-       
+            let toSortlist = self.collapseList();
+
+            if(self.tog==null || self.tog == asc){
+                self.tog = desc;
+            }
+            else
+                self.tog = asc;
+            let sortedlist;
+
+            switch(column){
+                case 'Team':
+                sortedlist = toSortlist.sort(function(a,b){
+                    if (a.key > b.key) {
+                        return 1;
+                    } else if (a.key < b.key) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+                break;
+
+                case ' Goals ':
+                sortedlist = toSortlist.sort(function(a,b){
+                    let gda=a.value[self.goalsMadeHeader] - a.value[self.goalsConcededHeader];
+                    let gdb=b.value[self.goalsMadeHeader] - b.value[self.goalsConcededHeader];
+                    //console()
+                    return gda-gdb;
+                });
+                break;
+
+                case 'Round/Result':
+                sortedlist = toSortlist.sort(function(a,b){
+                    return a.value.Result.ranking - b.value.Result.ranking;
+                });
+                break;
+
+                case 'Wins':
+                sortedlist = toSortlist.sort(function(a,b){
+                    return a.value.Wins - b.value.Wins;
+                });
+                break;
+
+                case 'Losses':
+                sortedlist = toSortlist.sort(function(a,b){
+                    return a.value.Losses - b.value.Losses;
+                });
+                break;
+
+                case 'Total Games':
+                sortedlist = toSortlist.sort(function(a,b){
+                    return a.value.TotalGames - b.value.TotalGames;
+                });
+
+                break;
+
+                default:
+
+                break;
+
+            }
+            if(sortedlist!=undefined){
+                self.tableElements = self.tog>0? sortedlist:sortedlist.reverse();
+
+                d3.select('#matchTable').select('tbody').selectAll('tr').remove();
+                self.updateTable();
+            }
+
+        }
+        let self = this;
+        tr.select('th')
+          .on('click', function(){
+            //console.log(this.textContent);
+            sort(this.textContent,self)
+        });  
+        tr.selectAll('td')
+          .on('click', function(){
+            //console.log(this.textContent);
+            sort(this.textContent,self)
+        });
     }
 
 
@@ -229,7 +313,7 @@ class Table {
     updateList(i) {
         // ******* TODO: PART IV *******
         //let newatableElement = this.tableElements;
-        console.log(i);
+        //console.log(i);
         //console.log(this.tableElements);
         //Only update list for aggregate clicks, not game clicks
         if(i==undefined || this.tableElements[i].value.type !='aggregate') return;
@@ -254,7 +338,7 @@ class Table {
     collapseList() {
         
         // ******* TODO: PART IV *******
-
+        return this.tableElements.filter(function(d) { return d.value.type == 'aggregate'; });
     }
 
 
