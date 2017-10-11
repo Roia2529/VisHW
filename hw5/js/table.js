@@ -312,9 +312,6 @@ class Table {
      */
     updateList(i) {
         // ******* TODO: PART IV *******
-        //let newatableElement = this.tableElements;
-        //console.log(i);
-        //console.log(this.tableElements);
         //Only update list for aggregate clicks, not game clicks
         if(i==undefined || this.tableElements[i].value.type !='aggregate') return;
 
