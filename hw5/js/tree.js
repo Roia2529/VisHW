@@ -110,6 +110,37 @@ class Tree {
      */
     updateTree(row) {
         // ******* TODO: PART VII *******
+        let rowdata = row;
+        let stage = d3.select('#tree'); 
+
+        if(rowdata.value.type=='aggregate'){
+            let link = stage.selectAll('.link');
+            let relatedgame = link.filter(function(d){
+                return d.data.Team==rowdata.key && d.data.Wins=='1';
+            });
+            relatedgame.classed('selected', true);
+
+            let label = stage.selectAll('text')
+                            .filter(function(d){
+                                return d.data.Team==rowdata.key;
+                            });
+            label.classed('selectedLabel',true);                
+        }
+        else{
+            let link = stage.selectAll('.link');
+            let relatedgame = link.filter(function(d){
+                return (d.data.Team==rowdata.key && d.data.Opponent==rowdata.value.Opponent) || 
+                (d.data.Opponent==rowdata.key && d.data.Team==rowdata.value.Opponent);
+            });
+            relatedgame.classed('selected', true);
+
+            let label = stage.selectAll('text')
+                    .filter(function(d){
+                        return d.id.startsWith(rowdata.key+rowdata.value.Opponent)||d.id.startsWith(rowdata.value.Opponent+rowdata.key);
+                    });
+            label.classed('selectedLabel',true);
+
+        }
     
     }
 
@@ -119,6 +150,8 @@ class Tree {
     clearTree() {
         // ******* TODO: PART VII *******
 
-        // You only need two lines of code for this! No loops! 
+        // You only need two lines of code for this! No loops!
+        d3.select('#tree').selectAll('.link').classed('selected',false);
+        d3.select('#tree').selectAll('text').classed('selectedLabel',false); 
     }
 }

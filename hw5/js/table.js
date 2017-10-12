@@ -6,7 +6,7 @@ class Table {
     constructor(teamData, treeObject) {
 
         //Maintain reference to the tree Object; 
-        this.tree = null; 
+        this.tree = treeObject; 
 
         // Create list of all elements that will populate the table
         // Initially, the tableElements will be identical to the teamData
@@ -195,7 +195,9 @@ class Table {
                 .enter()
                 .append('tr')
                 .attr('class',function(d){return d.value.type;})
-                .on('click', function(d,i){self.updateList(i)});
+                .on('click', function(d,i){self.updateList(i)})
+                .on('mouseover', function(d, i) { self.tree.updateTree(self.tableElements[i]); })
+                .on('mouseout', function() { self.tree.clearTree(); });
 
         //Append th elements for the Team Names
         //Note: return []!!!
