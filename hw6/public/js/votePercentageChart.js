@@ -84,15 +84,63 @@ class VotePercentageChart {
 
 
    			  // ******* TODO: PART III *******
-
+   			  
+   			//column: D_PopularPercentage, R_PopularPercentage and I_PopularPercentage
 		    //Create the stacked bar chart.
 		    //Use the global color scale to color code the rectangles.
 		    //HINT: Use .votesPercentage class to style your bars.
+		    let IPR = parseFloat(electionResult[0].I_PopularPercentage) || 0;
+		    let DPR = parseFloat(electionResult[0].D_PopularPercentage) ;
+		    let RPR = parseFloat(electionResult[0].R_PopularPercentage) ;
 
+		    let party = ['I', 'D', 'R'];
+		    let percentage = [IPR, DPR, RPR]
+		    let sum = 0;
+		    let x = [0].concat(percentage.map((d)=>{return sum+=d;}));
+
+		    //column: party percentage xposition electionResult
+		    let grouplist = d3.zip(party,percentage,x,electionResult.slice(0, 3));
+
+		    let xScale = d3.scaleLinear()
+				        .domain([0, 100])
+				        .range([0, this.svgWidth]);
+
+			let bars = this.svg.selectAll('.votesPercentage')
+                        .data(grouplist);
+
+		    bars.exit().remove();
+		    // 
+		    bars = bars.enter().append('rect').merge(bars);
+		            bars
+		               .attr('x',(d)=>{
+		                    return xScale(d[2]);
+		               })
+		               .attr('y',this.svgHeight/2) 
+		               .attr('width',(d)=>{return xScale(d[1])}) 
+		               .attr('height',35)
+		               .classed('votesPercentage',true)
+		               .attr('class',(d)=>{
+		                	return this.chooseClass(d[0]);
+		                });	        
 		    //Display the total percentage of votes won by each party
 		    //on top of the corresponding groups of bars.
 		    //HINT: Use the .votesPercentageText class to style your text elements;  Use this in combination with
 		    // chooseClass to get a color based on the party wherever necessary
+	
+		    let total = this.svg.selectAll('.votesPercentageText').data(grouplist);
+		    total.exit().remove();
+		    total = total.enter().append('text').merge(total);
+
+            total.attr('dy','-.5em')  
+                  .attr("x", (d) =>{
+                      return d[0]==='R'? this.svgWidth-100: d[0]==='I'? 0:xScale(d[2])+100;
+                  })
+                  .attr('y',this.svgHeight/2)
+                  .attr("text-anchor", (d)=> {
+                        return d[0]==='R'? "end" : "start";
+                  })
+                  .attr('class', (d) => { return 'votesPercentageText '+this.chooseClass(d[0]); })
+                  .text(function(d) { return d[1]===0? "":d[1]+"%"; });
 
 		    //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
 		    //HINT: Use .middlePoint class to style this bar.

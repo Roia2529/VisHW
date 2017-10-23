@@ -158,12 +158,8 @@ class ElectoralVoteChart {
     // to win the elections throughout the country
     //HINT: Use .electoralVotesNote class to style this text element
     let needvote = Math.floor(0.5 * d3.sum(threegroup,function(l){return +l.value.sum})+1);
-    //console.log(d3.abs(needvote));
 
     let note = this.svg.selectAll('.electoralVotesNote');
-    //console.log(note._groups);
-    //if(note.groups===undefined)
-    //    note.append('text');
 
     note.attr('class','electoralVotesNote')
         .attr("x", this.svgWidth/2)
