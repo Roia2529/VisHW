@@ -49,16 +49,64 @@ class ElectoralVoteChart {
      */
 
    update (electionResult, colorScale){
-
+    
           // ******* TODO: PART II *******
-
+    let  result = electionResult;
+    result.sort((a,b)=>{
+        return d3.ascending(+a.RD_Difference,+b.RD_Difference);
+    });
+    let  cScale = colorScale;      
+    //console.log(result);
+    
     //Group the states based on the winning party for the state;
     //then sort them based on the margin of victory
+    let group = d3.nest()
+                   .key(d=>{return d['State_Winner']})
+                   .sortKeys((a,b)=>{
+                       let keylist = ['I','D','R']; 
+                     return keylist.indexOf(a)-keylist.indexOf(b);
+                   })
+                   .entries(result)
+                   .map(function(g) { return g.values; }); 
+
+    let grouplist = group.reduce( (a,b)=> a.concat(b),[] );
 
     //Create the stacked bar chart.
     //Use the global color scale to color code the rectangles.
     //HINT: Use .electoralVotes class to style your bars.
+    let sum = 0;
+    grouplist.forEach((d)=>{
+        d.x = sum;
+        sum += +d.Total_EV;
+    });
+    console.log(grouplist);
 
+    let xScale = d3.scaleLinear()
+        .domain([0, d3.sum(grouplist, function(d) { return +d.Total_EV; })])
+        .range([0, this.svgWidth]);
+
+    let bars = this.svg.selectAll('rect')
+                        .data(grouplist);
+
+    bars.exit().remove();
+    // 
+    bars = bars.enter().append('rect').merge(bars);
+            bars
+               .attr('x',(d)=>{
+                    return xScale(d.x);
+               })
+               .attr('y',this.svgHeight/2) 
+               .attr('width',(d)=>{return xScale(d.Total_EV)}) 
+               .attr('height',30)
+               .classed('electoralVotes',true)
+               .attr('fill',(d)=>{
+                if(d['State_Winner']==='I'){
+                    return 'green';
+                }
+                else{
+                    return cScale(d.RD_Difference);
+                }
+                });                             
     //Display total count of electoral votes won by the Democrat and Republican party
     //on top of the corresponding groups of bars.
     //HINT: Use the .electoralVoteText class to style your text elements;  Use this in combination with
@@ -66,7 +114,16 @@ class ElectoralVoteChart {
 
     //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
     //HINT: Use .middlePoint class to style this bar.
-
+    //let midline = this.svg.selectAll('line');
+    //if(midline.length===0){
+            this.svg.append('line')
+                    .attr('x1', this.svgWidth/2)
+                    .attr('x2', this.svgWidth/2)
+                    .attr('y1', 60)
+                    .attr('y2', this.svgHeight-30)
+                    .style('stroke', 'black')
+                    .attr('class', 'middlePoint');
+    //}
     //Just above this, display the text mentioning the total number of electoral votes required
     // to win the elections throughout the country
     //HINT: Use .electoralVotesNote class to style this text element

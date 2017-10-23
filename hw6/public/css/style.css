@@ -75,6 +75,12 @@ h1 {
     stroke: #FFF;
 }
 
+/* manually added */
+.lineChart{
+    stroke:#000;
+    stroke-dasharray: 4;
+}
+
 .republican{
     fill: #de2d26;
     color: #de2d26;
