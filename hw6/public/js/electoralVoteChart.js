@@ -21,6 +21,8 @@ class ElectoralVoteChart {
             .attr("width",this.svgWidth)
             .attr("height",this.svgHeight)
 
+        this.svg.append('text')
+                .attr('class','electoralVotesNote');    
     };
 
     /**
@@ -79,7 +81,6 @@ class ElectoralVoteChart {
         d.x = sum;
         sum += +d.Total_EV;
     });
-    console.log(grouplist);
 
     let xScale = d3.scaleLinear()
         .domain([0, d3.sum(grouplist, function(d) { return +d.Total_EV; })])
@@ -97,7 +98,7 @@ class ElectoralVoteChart {
                })
                .attr('y',this.svgHeight/2) 
                .attr('width',(d)=>{return xScale(d.Total_EV)}) 
-               .attr('height',30)
+               .attr('height',32)
                .classed('electoralVotes',true)
                .attr('fill',(d)=>{
                 if(d['State_Winner']==='I'){
@@ -111,23 +112,64 @@ class ElectoralVoteChart {
     //on top of the corresponding groups of bars.
     //HINT: Use the .electoralVoteText class to style your text elements;  Use this in combination with
     // chooseClass to get a color based on the party wherever necessary
+    let threegroup = d3.nest()
+            .key(d=>{return d['State_Winner']})
+            .rollup((leaves)=> {
+                let sum = d3.sum(leaves,function(l){return +l.Total_EV});
+                let x = d3.min(leaves,function(l){return l.x});
+                return {
+                   "sum": sum,
+                   "x": x,
+                };
+            })
+            .entries(grouplist);
+
+    let total = this.svg.selectAll('.electoralVoteText').data(threegroup);
+    total.exit().remove();
+    total = total.enter().append('text').merge(total);
+
+            total.attr('dy','-.5em')  
+                  .attr("x", (d) =>{
+                      return d.key==='R'? this.svgWidth:xScale(d.value.x);
+                  })
+                  .attr('y',this.svgHeight/2)
+                  .attr("text-anchor", (d)=> {
+                        return d.key==='R'? "end" : "start";
+                  })
+                  .attr('class', (d) => { return 'electoralVoteText '+this.chooseClass(d.key); })
+                  .text(function(d) { return d.value.sum; });
 
     //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
     //HINT: Use .middlePoint class to style this bar.
-    //let midline = this.svg.selectAll('line');
-    //if(midline.length===0){
-            this.svg.append('line')
-                    .attr('x1', this.svgWidth/2)
-                    .attr('x2', this.svgWidth/2)
-                    .attr('y1', 60)
-                    .attr('y2', this.svgHeight-30)
-                    .style('stroke', 'black')
-                    .attr('class', 'middlePoint');
-    //}
+    
+    this.svg.selectAll('.middlePoint').remove();
+    //if(this.svg.selectAll('line').selectAll('.middlePoint')._groups.length===0)
+    //        this.svg.append('line');
+    
+    this.svg.append('line')   
+        .attr('x1', this.svgWidth/2)
+        .attr('x2', this.svgWidth/2)
+        .attr('y1', 60)
+        .attr('y2', this.svgHeight-30)
+        .style('stroke', 'black')
+        .attr('class', 'middlePoint');
+    
     //Just above this, display the text mentioning the total number of electoral votes required
     // to win the elections throughout the country
     //HINT: Use .electoralVotesNote class to style this text element
+    let needvote = Math.floor(0.5 * d3.sum(threegroup,function(l){return +l.value.sum})+1);
+    //console.log(d3.abs(needvote));
 
+    let note = this.svg.selectAll('.electoralVotesNote');
+    //console.log(note._groups);
+    //if(note.groups===undefined)
+    //    note.append('text');
+
+    note.attr('class','electoralVotesNote')
+        .attr("x", this.svgWidth/2)
+        .attr("text-anchor",'middle')
+        .attr('y', this.svgHeight/3)
+        .text('Electoral Vote (' + needvote + ' needed to win)');
     //HINT: Use the chooseClass method to style your elements based on party wherever necessary.
 
     //******* TODO: PART V *******
