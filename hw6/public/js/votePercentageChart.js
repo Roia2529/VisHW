@@ -18,6 +18,11 @@ class VotePercentageChart {
 	        .attr("width",this.svgWidth)
 	        .attr("height",this.svgHeight)
 
+	        
+	    this.svg.append('text')
+                .attr('class','electoralVotesNote');   
+		        
+
     }
 
 
@@ -79,7 +84,15 @@ class VotePercentageChart {
 	                 * pass this as an argument to the tooltip_render function then,
 	                 * return the HTML content returned from that method.
 	                 * */
-	                return;
+
+	                 let tooltip_data = {
+		                  "result":[
+		                  {"nominee": d[3].D_Nominee_prop,"votecount": d[3].D_Votes_Total,"percentage": d[3].D_PopularPercentage,"party":"D"} ,
+		                  {"nominee": d[3].R_Nominee_prop,"votecount": d[3].R_Votes_Total,"percentage": d[3].R_PopularPercentage,"party":"R"} ,
+		                  {"nominee": d[3].I_Nominee_prop,"votecount": d[3].I_Votes_Total,"percentage": d[3].I_PopularPercentage,"party":"I"}
+		                  ]
+	                  };
+	                return this.tooltip_render(tooltip_data);
 	            });
 
 
@@ -96,9 +109,11 @@ class VotePercentageChart {
 		    let party = ['I', 'D', 'R'];
 		    let percentage = [IPR, DPR, RPR]
 		    let sum = 0;
+		    // since 'I' always start from 0
 		    let x = [0].concat(percentage.map((d)=>{return sum+=d;}));
 
-		    //column: party percentage xposition electionResult
+		    //column: 	d[0]	d[1]		d[2]		d[3]
+		    //			party  percentage  xposition  electionResult
 		    let grouplist = d3.zip(party,percentage,x,electionResult.slice(0, 3));
 
 		    let xScale = d3.scaleLinear()
@@ -144,13 +159,53 @@ class VotePercentageChart {
 
 		    //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
 		    //HINT: Use .middlePoint class to style this bar.
+		    this.svg.selectAll('.middlePoint').remove();
+
+		    this.svg.append('line')   
+		        .attr('x1', this.svgWidth/2)
+		        .attr('x2', this.svgWidth/2)
+		        .attr('y1', this.svgHeight/2-30+18)
+		        .attr('y2', this.svgHeight/2+30+18)
+		        .style('stroke', 'black')
+		        .attr('class', 'middlePoint');
+
+		    let midtext = this.svg.selectAll('.electoralVotesNote');
+
+		    midtext.attr("x", this.svgWidth/2)
+		        .attr("text-anchor",'middle')
+		        .attr('y', this.svgHeight/3)
+		        .text('Popular Vote(50%)');    
 
 		    //Just above this, display the text mentioning details about this mark on top of this bar
 		    //HINT: Use .votesPercentageNote class to style this text element
+		    let candidate = [electionResult[0].I_Nominee,
+		    				 electionResult[0].D_Nominee,
+		    				 electionResult[0].R_Nominee];
+		    let namepos = [0, 
+		    				candidate[0]===''? 0 : this.svgWidth/4, 
+		    				this.svgWidth]
+
+		    let note = this.svg.selectAll('.votesPercentageNote')
+		    			.data(d3.zip(party,candidate,namepos));
+
+		    note.exit().remove();
+		    note = note.enter().append('text').merge(note);
+
+            note.attr('dy','-.5em')  
+                  .attr("x", (d) =>{ return d[2];})
+                  .attr('y',50)
+                  .attr("text-anchor", (d)=> {
+                        return d[0]==='R'? "end" : "start";
+                  })
+                  .attr('class', (d) => { return 'votesPercentageNote '+this.chooseClass(d[0]); })
+                  .text((d)=> { return d[1]; });
 
 		    //Call the tool tip on hover over the bars to display stateName, count of electoral votes.
 		    //then, vote percentage and number of votes won by each party.
-
+		    this.svg.call(tip)
+		    
+		    bars.on('mouseover', tip.show)
+        		.on('mouseout', tip.hide);
 		    //HINT: Use the chooseClass method to style your elements based on party wherever necessary.
 
 	};

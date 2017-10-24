@@ -143,9 +143,7 @@ class ElectoralVoteChart {
     //HINT: Use .middlePoint class to style this bar.
     
     this.svg.selectAll('.middlePoint').remove();
-    //if(this.svg.selectAll('line').selectAll('.middlePoint')._groups.length===0)
-    //        this.svg.append('line');
-    
+
     this.svg.append('line')   
         .attr('x1', this.svgWidth/2)
         .attr('x2', this.svgWidth/2)
