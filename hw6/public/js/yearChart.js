@@ -127,6 +127,7 @@ class YearChart {
                     d3.csv('data/Year_Timeline_' + d.YEAR + '.csv', (error, electionResult)=> {
                     this.electoralVoteChart.update(electionResult, this.colorScale);
                     this.votePercentageChart.update(electionResult);
+                    this.tileChart.update(electionResult, this.colorScale);
                     });
                 });
     circlegroup
