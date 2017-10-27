@@ -70,8 +70,7 @@ class YearChart {
             .domain(domain)
             .range(range);
 
-       // ******* TODO: PART I *******
-     //console.log(this.electionWinners);  
+       // ******* TODO: PART I *******  
     // Create the chart by adding circle elements representing each election year
     //The circles should be colored based on the winning party for that year
     //HINT: Use the .yearChart class to style your circle elements
@@ -92,9 +91,6 @@ class YearChart {
                 .attr('class',(d)=>{
                     return this.chooseClass(d.PARTY);
                 });
-                
-                //.on('mouseover', function(d, i) { self.tree.updateTree(self.tableElements[i]); })
-                //.on('mouseout', function() { self.tree.clearTree(); });
     //Append text information of each year right below the corresponding circle
     //HINT: Use .yeartext class to style your text elements
     let texts = this.svg.selectAll('.yeartext')
@@ -166,18 +162,7 @@ class YearChart {
             
             if(selectedYear.length>0)
                 this.loadSeveralYear(selectedYear,0,self);
-
-            /*                
-            var q = d3.queue();
-            q.defer(this.loadSeveralYear,selectedYear,self)
-            .await(function(error,self){
-              if (error) throw error;
-              console.log("Fail");
-              console.log(self.dataForYears);
-
-              self.voteShiftChart.update(selectedYear,self.dataForYears);
-            });
-            */               
+              
         }
     }
 
@@ -190,33 +175,19 @@ class YearChart {
 
     loadSeveralYear(selectedYear,index,self){
         if(index==selectedYear.length){
-            //console.log(self.dataForYears);
             self.voteShiftChart.update(selectedYear,self.dataForYears);
             return ;
         }
-        //let dataForYears;
-
-        //var q = d3.queue();
-
-        //for(let i=0;i<selectedYear.length;i++){
             d3.csv('data/Year_Timeline_' + selectedYear[index] + '.csv',(d)=>{
                     if (d === undefined) {
                         console.log("unable to load file");
                     }
                     else{
-                        //console.log("i",i);
-                        
-                        //if(index==0)
-                        //    self.dataForYears = d;
-                        //else{
                             d.forEach((c)=>{
                                self.dataForYears.push(c); 
                             });
-                        //}
                         self.loadSeveralYear(selectedYear,index+1,self);
                     }
                 });
-        //}
-
     }
 };

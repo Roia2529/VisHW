@@ -64,8 +64,10 @@ class voteShiftChart {
         tooltip_data.result.forEach((row)=>{
             if(row[1]>0)
                 text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t shift toward Republican "+row[1]+"%" + "</li>"
+            else if(row[1]<0)
+                text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t shift toward Democrat "+ (-1*row[1])+"%" + "</li>"
             else
-                text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t shift toward Democrat "+row[1]+"%" + "</li>"
+                text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t no shift" + "</li>"
         
         });
         text += "</ul>";
@@ -104,7 +106,7 @@ class voteShiftChart {
      * @param years election data for the year selected
      */
     update (years,yearsData){
-        //console.log(yearsData[0]);
+
         this.years = years;
         this.yearsData = yearsData;
 
@@ -129,7 +131,6 @@ class voteShiftChart {
             let chosenStateData = this.yearsData.filter((d)=>{
                                     return this.stateData.includes(d.State);
                                 });
-            //console.log(chosenStateData);
 
             let stateGroup = d3.nest()
                 .key(d=>{return d.State})
@@ -198,8 +199,6 @@ class voteShiftChart {
                     return [0,0];
                 })
                 .html((d)=>{
-                    //let shift;
-                    //if()
                     let tooltip_data = {
                         "state": d.key,
                         "result":d.value
@@ -214,7 +213,6 @@ class voteShiftChart {
                 .on('mouseout', tip.hide); 
 
             //Draw Legend
-            
             let legendQuantile = d3.legendColor()
                                 .scale(color);
 

@@ -58,8 +58,7 @@ class ElectoralVoteChart {
     result.sort((a,b)=>{
         return d3.ascending(+a.RD_Difference,+b.RD_Difference);
     });
-    let  cScale = colorScale;      
-    //console.log(result);
+    let  cScale = colorScale;   
     
     //Group the states based on the winning party for the state;
     //then sort them based on the margin of victory
@@ -186,16 +185,12 @@ class ElectoralVoteChart {
             this.shiftChart.update(selectedState);
             this.electoralVoteChart.updateStateData(selectedState);                
         }
-        //else{
-        //    this.shiftChart.update(selectedState);
-        //}
     }
 
 
     var brush = d3.brushX().extent([[0,0],[this.svgWidth,this.svgHeight]]).on("end", brushed);
     this.svg.append("g").attr("class", "brush").call(brush);
 
-    
 
     };
 
