@@ -7,25 +7,45 @@ class voteShiftChart {
      */
     constructor(){
 
-        let voteShift = d3.select("#vsChart").classed("content", true);
-        this.margin = {top: 30, right: 20, bottom: 90, left: 100};
+        let voteShift = d3.select("#vsChart").classed("fullView", true);
+        this.margin = {top: 30, right: 500, bottom: 90, left: 100, padding: 20};
         //Gets access to the div element created for this chart and legend element from HTML
         let svgBounds = voteShift.node().getBoundingClientRect();
         this.svgWidth = svgBounds.width - this.margin.left - this.margin.right;
         this.svgHeight = this.svgWidth/2;
-        let legendHeight = 150;
-        //add the svg to the div
-        let legend = d3.select("#legend").classed("content",true);
 
-        //creates svg elements within the div
         this.svg = voteShift.append("svg")
                             .attr("width",this.svgWidth)
                             .attr("height",this.svgHeight)
                             .attr("transform", "translate(" + this.margin.left + ",0)");
+
+        let legendHeight = 300;
+        let legendWidth = 150;
+        let legendPosX= this.svgWidth - this.margin.right
+        //legend
+        this.legendSvg = this.svg.append("g")
+                            .attr("width",legendWidth)
+                            .attr("height",legendHeight)
+                            .attr('id','stateLegend')
+                            .attr("transform", "translate(" + legendPosX + ",0)")
+
         this.svg.append('g')
                 .attr('id','yearAxis');  
         this.svg.append('g')
                 .attr('id','shiftAxis');
+
+        let textbuffery = this.svgHeight - this.margin.bottom/2; 
+        let textbufferx = (this.svgWidth-this.margin.right - this.margin.left )/2;         
+        this.svg.append('text')
+                .attr('class','yeartext')
+                .attr("transform", "translate(" + textbufferx + ","+ textbuffery +")")
+                .text('year');
+
+        this.svg.append('text')
+                .attr('class','yeartext')
+                .attr("transform", "translate(" + this.margin.left/2 + ","+ this.svgHeight/2+") rotate(-90)")
+                .text('Voter Shift Percentage'); 
+
         this.stateData = [];
         this.years;
         this.yearsData;                           
@@ -42,8 +62,11 @@ class voteShiftChart {
         text +=  "Voter Shift: ";
         text += "<ul>"
         tooltip_data.result.forEach((row)=>{
-            //text += "<li>" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-            text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t"+row[1]+"%" + "</li>"
+            if(row[1]>0)
+                text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t shift toward Republican "+row[1]+"%" + "</li>"
+            else
+                text += "<li class = " + this.chooseClass(row[1])+ ">" + row[0]+":\t\t shift toward Democrat "+row[1]+"%" + "</li>"
+        
         });
         text += "</ul>";
 
@@ -148,7 +171,11 @@ class voteShiftChart {
                 .attr('class','yAxis')
                 .call(yAxis);
 
-            let color = d3.scaleOrdinal(d3.schemeCategory20);
+            console.log(this.stateData);   
+            let color = d3.scaleOrdinal()
+                          .domain(this.stateData)
+                          .range(d3.schemeCategory20);
+
             let aLineGenerator = d3.line()
                                 .x((d) => xScale(d[0]))
                                 .y((d) => yScale(d[1])); 
@@ -160,7 +187,7 @@ class voteShiftChart {
             lines = lines.enter().append('path').merge(lines);
 
             lines.attr('d',(d)=>{ return aLineGenerator(d.value);})
-                 .attr('stroke',(d,i)=>{ return color(i); })
+                 .attr('stroke',(d)=>{ return color(d.key); })
                  .attr('transform', 'translate(' + this.margin.left + ',' + 0 + ')')
                  .attr('class','shiftLine'); 
 
@@ -171,7 +198,8 @@ class voteShiftChart {
                     return [0,0];
                 })
                 .html((d)=>{
-                    
+                    //let shift;
+                    //if()
                     let tooltip_data = {
                         "state": d.key,
                         "result":d.value
@@ -183,7 +211,14 @@ class voteShiftChart {
             this.svg.call(tip);
             
             lines.on('mouseover', tip.show)
-                .on('mouseout', tip.hide);                
+                .on('mouseout', tip.hide); 
+
+            //Draw Legend
+            
+            let legendQuantile = d3.legendColor()
+                                .scale(color);
+
+            this.legendSvg.call(legendQuantile);                   
             
         }
         else{        
