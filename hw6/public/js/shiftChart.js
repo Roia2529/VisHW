@@ -6,6 +6,9 @@ class ShiftChart {
      */
     constructor(){
         this.divShiftChart = d3.select("#shiftChart").classed("sideBar", true);
+        this.statelist = d3.select("#stateList")
+                            .append('ul')
+                            .attr('id','slist');
     };
 
     /**
@@ -17,6 +20,14 @@ class ShiftChart {
      
      // ******* TODO: PART V *******
     //Display the names of selected states in a list
+    //console.log(selectedStates);
+    let list = d3.select("#slist").selectAll('li').data(selectedStates);
+
+    list.exit().remove();
+    list = list.enter().append('li').merge(list);
+                    
+    list.text(function (d) {return d})
+        .attr('class', 'brushtext'); 
 
     //******** TODO: PART VI*******
     //Use the shift data corresponding to the selected years and sketch a visualization

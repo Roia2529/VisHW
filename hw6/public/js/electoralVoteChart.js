@@ -5,7 +5,8 @@ class ElectoralVoteChart {
      *
      * @param shiftChart an instance of the ShiftChart class
      */
-    constructor (shiftChart){
+    constructor (shiftChart,electoralVoteChart){
+        this.electoralVoteChart = electoralVoteChart;
         this.shiftChart = shiftChart;
         
         this.margin = {top: 30, right: 20, bottom: 30, left: 50};
@@ -171,7 +172,30 @@ class ElectoralVoteChart {
     //Implement a call back method to handle the brush end event.
     //Call the update method of shiftChart and pass the data corresponding to brush selection.
     //HINT: Use the .brush class to style the brush.
+    let brushed = ()=>{
+        //console.log(d3.event.selection);
+        
+        if(d3.event.selection){
+            let loc = d3.event.selection;
+            let selectedState = grouplist.filter((d)=>{
+                                let start = xScale(d.x);
+                                let end = start+xScale(d.Total_EV);
+                                return start >= loc[0] && end <= loc[1];
+                            })
+                            .map((s)=>{return s.State;});
+            this.shiftChart.update(selectedState);
+            this.electoralVoteChart.updateStateData(selectedState);                
+        }
+        //else{
+        //    this.shiftChart.update(selectedState);
+        //}
+    }
 
+
+    var brush = d3.brushX().extent([[0,0],[this.svgWidth,this.svgHeight]]).on("end", brushed);
+    this.svg.append("g").attr("class", "brush").call(brush);
+
+    
 
     };
 

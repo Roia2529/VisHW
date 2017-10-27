@@ -10,8 +10,8 @@ class YearChart {
      * @param electionInfo instance of ElectionInfo
      * @param electionWinners data corresponding to the winning parties over mutiple election years
      */
-    constructor (electoralVoteChart, tileChart, votePercentageChart, electionWinners) {
-
+    constructor (electoralVoteChart, tileChart, votePercentageChart, electionWinners, voteShiftChart) {
+        this.voteShiftChart = voteShiftChart;
         //Creating YearChart instance
         this.electoralVoteChart = electoralVoteChart;
         this.tileChart = tileChart;
@@ -31,7 +31,9 @@ class YearChart {
         //add the svg to the div
         this.svg = divyearChart.append("svg")
             .attr("width", this.svgWidth)
-            .attr("height", this.svgHeight)
+            .attr("height", this.svgHeight);
+
+        this.dataForYears;    
     };
 
 
@@ -76,7 +78,7 @@ class YearChart {
     //HINT: Use the chooseClass method to choose the color corresponding to the winning party.
     let xScale = d3.scaleLinear()
             .domain([d3.min(this.electionWinners,function(t){return +t.YEAR}), d3.max(this.electionWinners,function(t){return +t.YEAR})])
-            .range([this.margin.left, this.svgWidth-this.margin.right]);
+            .range([this.margin.left, this.svgWidth-this.margin.left]);
 
     let circles = this.svg.selectAll('circle')
                         .data(this.electionWinners);
@@ -95,14 +97,15 @@ class YearChart {
                 //.on('mouseout', function() { self.tree.clearTree(); });
     //Append text information of each year right below the corresponding circle
     //HINT: Use .yeartext class to style your text elements
-    let texts = this.svg.selectAll('text')
+    let texts = this.svg.selectAll('.yeartext')
                 .data(this.electionWinners.map(d=>d.YEAR));
     texts.enter().append('text')
-                  .attr('dy','3.0em')  
+                  .attr('dy','2.0em')  
                   .attr("x", function(d) {
-                      return xScale(+d)-20;
+                      return xScale(+d);
                   })
                   .attr('y',this.svgHeight/2)
+                  .attr('class','yeartext')
                   .text(function(d) { return d; });           
     //Style the chart by adding a dashed line that connects all these years.
     //HINT: Use .lineChart to style this dashed line
@@ -121,8 +124,7 @@ class YearChart {
     circlegroup.on('click', (d,i)=>{
                     circlegroup.classed('selected',false);
                     let onecircle = circlegroup.filter(function(elm,j){return i == j;});
-                    //circlegroup[i].classed('selected',true);
-                    //console.log(onecircle);                
+                                   
                     onecircle.classed('selected',true);
                     d3.csv('data/Year_Timeline_' + d.YEAR + '.csv', (error, electionResult)=> {
                     this.electoralVoteChart.update(electionResult, this.colorScale);
@@ -149,7 +151,72 @@ class YearChart {
     //Implement a call back method to handle the brush end event.
     //Call the update method of shiftChart and pass the data corresponding to brush selection.
     //HINT: Use the .brush class to style the brush.
+    let brushed = ()=>{
+        console.log(d3.event.selection);
+        if(d3.event.selection){
+            let loc = d3.event.selection;
+            let selectedYear = this.electionWinners.filter((d)=>{
+                                let start = xScale(+d.YEAR)-15;
+                                let end = start+30;
+                                return start >= loc[0] && end <= loc[1];
+                            })
+                            .map((s)=>{return s.YEAR;});
+            let self = this;                
+            this.dataForYears = [];
+            
+            if(selectedYear.length>0)
+                this.loadSeveralYear(selectedYear,0,self);
+
+            /*                
+            var q = d3.queue();
+            q.defer(this.loadSeveralYear,selectedYear,self)
+            .await(function(error,self){
+              if (error) throw error;
+              console.log("Fail");
+              console.log(self.dataForYears);
+
+              self.voteShiftChart.update(selectedYear,self.dataForYears);
+            });
+            */               
+        }
+    }
+
+
+    var brush = d3.brushX().extent([[0,20],[this.svgWidth,this.svgHeight/2]]).on("end", brushed);
+    this.svg.append("g").attr("class", "brush").call(brush);
 
     };
 
+
+    loadSeveralYear(selectedYear,index,self){
+        if(index==selectedYear.length){
+            //console.log(self.dataForYears);
+            self.voteShiftChart.update(selectedYear,self.dataForYears);
+            return ;
+        }
+        //let dataForYears;
+
+        //var q = d3.queue();
+
+        //for(let i=0;i<selectedYear.length;i++){
+            d3.csv('data/Year_Timeline_' + selectedYear[index] + '.csv',(d)=>{
+                    if (d === undefined) {
+                        console.log("unable to load file");
+                    }
+                    else{
+                        //console.log("i",i);
+                        
+                        //if(index==0)
+                        //    self.dataForYears = d;
+                        //else{
+                            d.forEach((c)=>{
+                               self.dataForYears.push(c); 
+                            });
+                        //}
+                        self.loadSeveralYear(selectedYear,index+1,self);
+                    }
+                });
+        //}
+
+    }
 };

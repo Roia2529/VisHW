@@ -190,4 +190,12 @@ h3{
     font-size: 32px;
 }
 
+.yAxis{
+    font-size: 18px;
+}
+
+.shiftLine{
+    fill: none;
+    stroke-width:4;
+}
 
